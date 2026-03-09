@@ -216,7 +216,8 @@ class App {
           );
           this._presetStore = new PresetStore(
             this._poseManager,
-            this._sceneManager.lightingSystem
+            this._sceneManager.lightingSystem,
+            this._modelManager   // Phase VIII：多角色支持
           );
 
           // ── ZenMode ──────────────────────────────────────────────
@@ -320,7 +321,8 @@ class App {
         bar.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('cam-btn--active'));
         btn.classList.add('cam-btn--active');
         this._activePreset = key;
-        this._camAnimator.flyTo(key, 680, () => {});
+
+        this._camAnimator.flyTo(key, 680, () => {},this._modelManager?.activeRoot ?? null);
       });
       bar.appendChild(btn);
     }
@@ -435,7 +437,11 @@ class App {
   async _doImport() {
     if (!this._presetStore) { this._ui.toast('模型尚未加载', 'warning'); return; }
     this._ui.toast('请选择配置文件…', 'info', 2000);
-    const ok = await this._presetStore.importFromFile({ posePanel: this._posePanel, lightingPanel: this._lightingPanel });
+    const ok = await this._presetStore.importFromFile({
+      posePanel:      this._posePanel,
+      lightingPanel:  this._lightingPanel,
+      onActiveChange: (entry) => this._onActiveCharacterChange(entry),
+    });
     this._ui.toast(ok ? '配置已恢复 ✓' : '导入失败，请检查文件格式', ok ? 'success' : 'error');
   }
 
