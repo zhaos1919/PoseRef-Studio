@@ -1,0 +1,254 @@
+/* ==============================================
+   area_light.css — Phase VIII 柔光箱面板样式
+   ============================================== */
+
+/* -----------------------------------------------
+   区块容器
+   ----------------------------------------------- */
+.area-light-section {
+  border-top: 1px solid var(--color-separator);
+  padding-top: var(--space-2);
+}
+
+/* -----------------------------------------------
+   添加按钮
+   ----------------------------------------------- */
+.area-light-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--color-accent);
+  background: rgba(0, 113, 227, 0.07);
+  color: var(--color-accent);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background  130ms ease,
+    transform   130ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.area-light-add-btn:hover {
+  background: rgba(0, 113, 227, 0.13);
+  transform: scale(1.04);
+}
+
+.area-light-add-btn:active {
+  transform: scale(0.97);
+}
+
+/* -----------------------------------------------
+   空状态提示
+   ----------------------------------------------- */
+.area-light-empty {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-quaternary, rgba(0,0,0,0.3));
+  text-align: center;
+  font-style: italic;
+}
+
+/* -----------------------------------------------
+   光源列表
+   ----------------------------------------------- */
+.area-light-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+/* -----------------------------------------------
+   单个光源卡片
+   ----------------------------------------------- */
+.area-light-card {
+  background: rgba(0, 113, 227, 0.04);
+  border: 1px solid rgba(0, 113, 227, 0.12);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+
+  /* 进入动画 */
+  animation: area-card-in 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes area-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 删除动画 */
+.area-light-card--removing {
+  animation: area-card-out 220ms ease forwards;
+}
+
+@keyframes area-card-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    border-width: 0;
+  }
+}
+
+/* -----------------------------------------------
+   卡片标题行
+   ----------------------------------------------- */
+.area-light-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: 2px;
+}
+
+.area-light-card__icon {
+  font-size: 13px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.area-light-card__name {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* -----------------------------------------------
+   辅助框切换按钮
+   ----------------------------------------------- */
+.area-light-toggle-btn {
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: rgba(0,0,0,0.04);
+  color: var(--color-text-tertiary);
+  font-size: 9px;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 130ms ease;
+  flex-shrink: 0;
+}
+
+.area-light-toggle-btn--active {
+  background: rgba(0, 113, 227, 0.10);
+  border-color: rgba(0, 113, 227, 0.25);
+  color: var(--color-accent);
+}
+
+.area-light-toggle-btn:hover {
+  border-color: rgba(0, 113, 227, 0.3);
+  color: var(--color-accent);
+}
+
+/* -----------------------------------------------
+   删除按钮
+   ----------------------------------------------- */
+.area-light-remove-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 59, 48, 0.06);
+  color: rgba(255, 59, 48, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 130ms ease;
+  flex-shrink: 0;
+}
+
+.area-light-remove-btn:hover {
+  background: rgba(255, 59, 48, 0.12);
+  color: rgba(255, 59, 48, 0.9);
+  transform: scale(1.1);
+}
+
+/* -----------------------------------------------
+   位置预设按钮行
+   ----------------------------------------------- */
+.area-light-preset-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  margin-bottom: var(--space-1);
+}
+
+.area-light-preset-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 2px;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid transparent;
+  background: rgba(0,0,0,0.03);
+  color: var(--color-text-tertiary);
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 130ms ease;
+  line-height: 1.2;
+}
+
+.area-light-preset-btn span:first-child {
+  font-size: 11px;
+}
+
+.area-light-preset-btn:hover {
+  background: rgba(0, 113, 227, 0.06);
+  color: var(--color-accent);
+  border-color: rgba(0, 113, 227, 0.15);
+}
+
+.area-light-preset-btn--active {
+  background: rgba(0, 113, 227, 0.10);
+  color: var(--color-accent);
+  border-color: rgba(0, 113, 227, 0.25);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* -----------------------------------------------
+   Sliders 容器
+   ----------------------------------------------- */
+.area-light-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* -----------------------------------------------
+   颜色行
+   ----------------------------------------------- */
+.area-light-color-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-top: var(--space-1);
+}
+
+.area-light-color-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-weight: var(--font-weight-medium);
+  flex-shrink: 0;
+  min-width: 28px;
+}

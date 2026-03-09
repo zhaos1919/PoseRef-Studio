@@ -1,0 +1,98 @@
+/* ==============================================
+   animations.css — 关键帧动画 & 过渡效果
+   ============================================== */
+
+/* -----------------------------------------------
+   入场动画：从右滑入（左侧面板）
+   ----------------------------------------------- */
+@keyframes slideRightFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* -----------------------------------------------
+   入场动画：从左滑入（右侧面板）
+   ----------------------------------------------- */
+@keyframes slideLeftFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* -----------------------------------------------
+   入场动画：从上滑入（顶部工具栏）
+   ----------------------------------------------- */
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------
+   入场动画：从下滑入（底部状态栏）
+   ----------------------------------------------- */
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -----------------------------------------------
+   通用淡入
+   ----------------------------------------------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* -----------------------------------------------
+   微缩放弹入（用于按钮点击反馈等）
+   ----------------------------------------------- */
+@keyframes popIn {
+  0%   { transform: scale(0.88); opacity: 0; }
+  60%  { transform: scale(1.04); }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+/* -----------------------------------------------
+   工具类：动画延迟辅助
+   ----------------------------------------------- */
+.anim-delay-1 { animation-delay: 0.1s !important; }
+.anim-delay-2 { animation-delay: 0.2s !important; }
+.anim-delay-3 { animation-delay: 0.3s !important; }
+.anim-delay-4 { animation-delay: 0.4s !important; }
+.anim-delay-5 { animation-delay: 0.5s !important; }
+
+/* -----------------------------------------------
+   减少动画（无障碍：尊重系统偏好）
+   ----------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

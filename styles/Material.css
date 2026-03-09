@@ -1,0 +1,301 @@
+/**
+ * material.css — Phase VII 新增样式
+ * 覆盖：MaterialPanel · CharacterBar · TransformControls · toolbar center
+ *
+ * 设计语言：Apple 极简，与既有 panel.css / ui.css 完全统一
+ */
+
+/* ═══════════════════════════════════════════════════════════════
+   1. 工具栏中间区域（角色管理栏）
+   ═══════════════════════════════════════════════════════════════ */
+
+.toolbar__center {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+  min-width: 0;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+/* 变换模式按钮组 */
+.char-mode-wrap {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0,0,0,0.04);
+  border-radius: 7px;
+  padding: 2px;
+  border: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.char-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: rgba(0,0,0,0.35);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.char-mode-btn:hover {
+  color: rgba(0,0,0,0.65);
+  background: rgba(0,0,0,0.06);
+}
+
+.char-mode-btn--active {
+  background: rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.70);
+}
+
+/* 分隔线 */
+.char-bar__div {
+  width: 0.5px;
+  height: 16px;
+  background: rgba(0,0,0,0.10);
+  flex-shrink: 0;
+}
+
+/* 角色标签列表 */
+.char-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 380px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.char-list::-webkit-scrollbar { display: none; }
+
+/* 单个角色标签 */
+.char-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 8px 0 7px;
+  border-radius: 7px;
+  border: 0.5px solid rgba(0,0,0,0.08);
+  background: rgba(0,0,0,0.04);
+  color: rgba(0,0,0,0.45);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.char-tag:hover {
+  background: rgba(0,0,0,0.07);
+  color: rgba(0,0,0,0.72);
+}
+
+.char-tag--active {
+  background: rgba(0,0,0,0.07);
+  border-color: rgba(0,0,0,0.14);
+  color: rgba(0,0,0,0.80);
+  font-weight: 600;
+}
+
+.char-tag__icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.55;
+}
+
+.char-tag--active .char-tag__icon {
+  opacity: 0.85;
+}
+
+.char-tag__name {
+  line-height: 1;
+}
+
+/* 删除按钮 */
+.char-tag__del {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(0,0,0,0.25);
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1px;
+  transition: background 0.12s, color 0.12s;
+}
+
+.char-tag__del:hover {
+  background: rgba(220, 60, 60, 0.10);
+  color: rgba(200,50,50,0.85);
+}
+
+/* 添加角色按钮 */
+.tool-btn--add-char {
+  background: rgba(0,0,0,0.04) !important;
+  border: 0.5px solid rgba(0,0,0,0.08) !important;
+  color: rgba(0,0,0,0.50) !important;
+}
+
+.tool-btn--add-char:hover {
+  background: rgba(0,0,0,0.08) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: rgba(0,0,0,0.72) !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   2. 材质面板（MaterialPanel）
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 分区容器 */
+.mat-section {
+  padding: 10px 14px 6px;
+}
+
+.mat-section__title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary, rgba(255,255,255,0.38));
+  margin-bottom: 10px;
+}
+
+/* 材质球网格 */
+.mat-ball-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+/* 单个材质球按钮 */
+.mat-ball-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 4px 7px;
+  border-radius: 9px;
+  border: 1px solid var(--color-border, rgba(255,255,255,0.07));
+  background: var(--color-surface-raised, rgba(255,255,255,0.03));
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+
+.mat-ball-item:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-1px);
+}
+
+.mat-ball-item--active {
+  background: rgba(100, 160, 255, 0.1);
+  border-color: rgba(100, 160, 255, 0.3);
+}
+
+/* 材质球 SVG 容器 */
+.mat-ball-item__sphere {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  box-shadow: inset 0 -1px 3px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+
+.mat-ball-item__label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-secondary, rgba(255,255,255,0.42));
+  white-space: nowrap;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.mat-ball-item--active .mat-ball-item__label {
+  color: #88c0ff;
+}
+
+/* 自定义颜色行 */
+.mat-color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0 10px;
+  gap: 10px;
+}
+
+.mat-color-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary, rgba(255,255,255,0.48));
+  letter-spacing: 0.01em;
+}
+
+/* Apple 风格颜色选择器 */
+.mat-color-picker {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1.5px solid var(--color-border, rgba(255,255,255,0.12));
+  padding: 1px;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.mat-color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 4px;
+}
+
+.mat-color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.mat-color-picker:hover {
+  border-color: rgba(100, 160, 255, 0.4);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   3. 响应式处理
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .char-tag__name {
+    display: none;
+  }
+  .tool-btn--add-char span {
+    display: none;
+  }
+  .char-list {
+    max-width: 180px;
+  }
+}
+
+@media (max-width: 640px) {
+  .toolbar__center {
+    display: none;
+  }
+}

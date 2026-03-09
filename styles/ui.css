@@ -1,0 +1,333 @@
+/* ==============================================
+   ui.css — 全局 UI 布局：画布 / 工具栏 / 状态栏
+   ============================================== */
+
+
+/* -----------------------------------------------
+   1. WebGL 画布容器
+   ----------------------------------------------- */
+#canvas-container {
+  position: absolute;
+  inset: 0;              /* top/right/bottom/left: 0 */
+  z-index: var(--z-canvas);
+  /* 光标：3D 视口默认为抓手 */
+  cursor: grab;
+}
+
+#canvas-container:active {
+  cursor: grabbing;
+}
+
+/* Three.js 注入的 <canvas> 元素 */
+#canvas-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  /* 防止高 DPR 设备画布模糊 */
+  image-rendering: crisp-edges;
+}
+
+
+/* -----------------------------------------------
+   2. 顶部工具栏
+   ----------------------------------------------- */
+#toolbar-top {
+  position: absolute;
+  top: var(--space-4);
+  /* 左右留出面板宽度 + 额外边距，避免遮挡 */
+  left: calc(268px + var(--space-4));
+  right: var(--space-4);
+  height: 38px;
+  z-index: var(--z-toolbar);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  /* 毛玻璃效果 */
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--panel-shadow);
+  padding: 0 var(--space-4);
+
+  /* 入场动画 */
+  animation: slideDownFadeIn var(--duration-slow) var(--ease-out-expo) both;
+  animation-delay: 0.4s;
+}
+
+.toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.toolbar__placeholder {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-tertiary);
+  font-style: italic;
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+
+/* -----------------------------------------------
+   3. 性能监控（FPS）
+   ----------------------------------------------- */
+.perf-monitor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.perf-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.perf-value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* FPS 颜色状态：根据性能动态切换（由 JS 控制 class） */
+.perf-monitor.perf--good  .perf-value { color: var(--color-success); }
+.perf-monitor.perf--warn  .perf-value { color: var(--color-warning); }
+.perf-monitor.perf--poor  .perf-value { color: var(--color-danger); }
+
+
+/* -----------------------------------------------
+   4. 底部状态栏
+   ----------------------------------------------- */
+.statusbar {
+  position: absolute;
+  bottom: var(--space-4);
+  left: calc(268px + var(--space-4));
+  right: var(--space-4);
+  height: 30px;
+  z-index: var(--z-statusbar);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--panel-shadow);
+  padding: 0 var(--space-4);
+
+  animation: slideUpFadeIn var(--duration-slow) var(--ease-out-expo) both;
+  animation-delay: 0.5s;
+}
+
+.statusbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.statusbar__group--center {
+  justify-content: center;
+}
+
+.statusbar__group--right {
+  justify-content: flex-end;
+}
+
+.statusbar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.statusbar__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  font-weight: var(--font-weight-medium);
+}
+
+.statusbar__value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.statusbar__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.02em;
+}
+
+
+/* -----------------------------------------------
+   5. 加载遮罩
+   ----------------------------------------------- */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 深色半透明背景配合画布色 */
+  background: var(--color-bg-canvas);
+  transition:
+    opacity var(--duration-slow) var(--ease-out-expo),
+    visibility var(--duration-slow);
+}
+
+/* JS 调用此 class 触发淡出 */
+.loading-overlay.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+/* 双环旋转 Spinner */
+.loading-spinner {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.spinner-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.6);
+  animation: spinnerRotate 1s linear infinite;
+}
+
+.spinner-ring--delay {
+  inset: 7px;
+  border-top-color: rgba(255, 255, 255, 0.25);
+  animation-duration: 1.5s;
+  animation-direction: reverse;
+}
+
+@keyframes spinnerRotate {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.loading-subtext {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-dark-secondary);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  margin-top: calc(-1 * var(--space-3));
+}
+
+
+/* -----------------------------------------------
+   Phase II 新增：加载进度条
+   ----------------------------------------------- */
+.progress-bar-wrap {
+  width: 200px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 1px;
+  transition: width 0.2s ease;
+}
+
+/* 进度未知时的无限动画 */
+.progress-bar-fill.progress--indeterminate {
+  animation: progressIndeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes progressIndeterminate {
+  0%   { transform: translateX(-100%); width: 60%; }
+  100% { transform: translateX(200%);  width: 60%; }
+}
+
+.progress-percent {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-on-dark-secondary);
+  margin-top: var(--space-1);
+  min-height: 14px;
+  display: block;
+  text-align: center;
+}
+
+
+/* -----------------------------------------------
+   Phase II 新增：面板信息卡片
+   ----------------------------------------------- */
+.info-card {
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  font-weight: var(--font-weight-medium);
+}
+
+.info-value {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  text-align: right;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

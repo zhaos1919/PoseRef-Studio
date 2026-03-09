@@ -1,0 +1,312 @@
+/* ==============================================
+   panel.css — 毛玻璃控制面板
+   Apple 风格 Glassmorphism 悬浮面板
+   ============================================== */
+
+/* -----------------------------------------------
+   1. 面板基础结构
+   ----------------------------------------------- */
+.panel {
+  position: absolute;
+  top: var(--space-4);
+  bottom: var(--space-4);
+  z-index: var(--z-panel);
+  width: 252px;
+
+  display: flex;
+  flex-direction: column;
+
+  /* ── 毛玻璃核心样式 ── */
+  background: var(--panel-bg);
+  backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--panel-shadow);
+
+  /* 防止内容溢出圆角边界 */
+  overflow: hidden;
+
+  /* 平滑折叠动画 */
+  transition:
+    transform var(--duration-slow) var(--ease-out-expo),
+    opacity  var(--duration-slow) var(--ease-out-expo),
+    width    var(--duration-slow) var(--ease-out-expo);
+
+  /* 入场动画 */
+  animation: slideRightFadeIn var(--duration-slow) var(--ease-out-expo) both;
+  animation-delay: 0.2s;
+}
+
+/* 左侧面板定位 */
+.panel--left {
+  left: var(--space-4);
+}
+
+/* 右侧面板定位 */
+.panel--right {
+  right: var(--space-4);
+  animation-name: slideLeftFadeIn;
+  animation-delay: 0.3s;
+}
+
+/* 折叠状态 */
+.panel--collapsed {
+  transform: translateX(-16px);
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  overflow: hidden;
+}
+
+.panel--right.panel--collapsed {
+  transform: translateX(16px);
+}
+
+
+/* -----------------------------------------------
+   2. 面板头部
+   ----------------------------------------------- */
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  flex-shrink: 0;
+}
+
+/* 品牌区域 */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: background var(--duration-fast) var(--ease-in-out);
+}
+
+.brand__icon:hover {
+  background: rgba(0, 0, 0, 0.10);
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.brand__name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+  line-height: 1;
+}
+
+.brand__tagline {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  letter-spacing: var(--letter-spacing-wide);
+  font-weight: var(--font-weight-medium);
+}
+
+/* 面板通用标题（非品牌） */
+.panel__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* 折叠切换按钮 */
+.panel__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition:
+    background var(--duration-fast) var(--ease-in-out),
+    color     var(--duration-fast) var(--ease-in-out);
+  flex-shrink: 0;
+}
+
+.panel__toggle:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-text-primary);
+}
+
+.panel__toggle:active {
+  background: rgba(0, 0, 0, 0.10);
+  transform: scale(0.92);
+}
+
+
+/* -----------------------------------------------
+   3. 分割线
+   ----------------------------------------------- */
+.panel__divider {
+  height: 1px;
+  background: var(--color-separator);
+  margin: 0 var(--space-4);
+  flex-shrink: 0;
+}
+
+
+/* -----------------------------------------------
+   4. 面板内容区段
+   ----------------------------------------------- */
+.panel__section {
+  padding: var(--space-3) var(--space-4);
+  flex-shrink: 0;
+}
+
+.panel__section-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  margin-bottom: var(--space-3);
+}
+
+/* 控件占位区域 */
+.panel__controls-placeholder {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px dashed rgba(0, 0, 0, 0.10);
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  text-align: center;
+  line-height: var(--line-height-normal);
+}
+
+
+/* -----------------------------------------------
+   5. 面板滚动区域（内容多时出现）
+   ----------------------------------------------- */
+.panel__scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 自定义滚动条 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.panel__scroll-area::-webkit-scrollbar {
+  width: 4px;
+}
+
+.panel__scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.panel__scroll-area::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+
+/* -----------------------------------------------
+   6. 面板底部状态区
+   ----------------------------------------------- */
+.panel__footer {
+  margin-top: auto;          /* 推至底部 */
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--color-separator);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* 渲染状态指示器 */
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-text-tertiary);
+  transition: background var(--duration-normal) var(--ease-in-out);
+}
+
+.status-indicator--active {
+  background: var(--color-success);
+  /* 呼吸动画 */
+  animation: statusPulse 2.4s ease-in-out infinite;
+}
+
+.status-indicator--error {
+  background: var(--color-danger);
+}
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(0.85); }
+}
+
+.status-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+.version-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+
+/* -----------------------------------------------
+   7. 响应式：小屏幕适配
+   ----------------------------------------------- */
+@media (max-width: 768px) {
+  .panel {
+    width: 220px;
+  }
+
+  #toolbar-top,
+  .statusbar {
+    left: calc(220px + var(--space-3));
+  }
+}
+
+@media (max-width: 480px) {
+  /* 超小屏隐藏左侧面板，改为底部抽屉（后续阶段实现） */
+  .panel--left {
+    transform: translateX(calc(-100% - var(--space-4)));
+  }
+
+  #toolbar-top,
+  .statusbar {
+    left: var(--space-3);
+  }
+}

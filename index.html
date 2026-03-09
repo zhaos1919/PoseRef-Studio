@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PoseRef · 姿态参考系统</title>
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/ui.css" />
+  <link rel="stylesheet" href="/styles/panel.css" />
+  <link rel="stylesheet" href="/styles/animations.css" />
+  <link rel="stylesheet" href="/styles/pose.css" />
+  <link rel="stylesheet" href="/styles/lighting.css" />
+  <link rel="stylesheet" href="/styles/advanced.css" />
+  <link rel="stylesheet" href="/styles/material.css" />
+
+  <link rel="stylesheet" href="/styles/area_light.css" />
+  <link rel="stylesheet" href="/styles/help.css" />
+  
+</head>
+<body>
+
+<div id="app" role="application">
+
+  <!-- WebGL 画布 -->
+  <main id="canvas-container" aria-label="3D 视口"></main>
+
+  <!-- ── 左侧控制面板 ───────────────────────────── -->
+  <aside id="panel-left" class="panel panel--left">
+
+    <!-- 品牌标题栏 -->
+    <header class="panel__header">
+      <div class="brand">
+        <span class="brand__icon">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 19v-5.5a6 6 0 0 1 12 0V19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M7.5 13.5V19M12.5 13.5V19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.4"/>
+          </svg>
+        </span>
+        <div class="brand__text">
+          <h1 class="brand__name">PoseRef</h1>
+          <p class="brand__tagline">姿态 · 光影 · 参考</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- 模型统计 -->
+    <div class="model-stats">
+      <div class="model-stat">
+        <span class="model-stat__icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="3" r="1.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M2 11v-3a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="model-stat__value" id="bone-count">—</span>
+        <span class="model-stat__label">骨骼</span>
+      </div>
+      <div class="model-stat__sep"></div>
+      <div class="model-stat">
+        <span class="model-stat__icon">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+            <path d="M2 9 L5 4 L8 7 L10 5 L12 8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="model-stat__value" id="model-name">—</span>
+        <span class="model-stat__label">动画</span>
+      </div>
+      <div class="model-stat__sep"></div>
+      <div class="model-stat">
+        <span class="model-stat__dot status-dot" id="status-dot"></span>
+        <span class="model-stat__value" id="render-status">加载中</span>
+      </div>
+    </div>
+
+    <div class="panel__sep"></div>
+
+    <!-- 相机视角预设 -->
+    <div class="section-block">
+      <div class="section-header">
+        <span class="section-header__label">视角预设</span>
+      </div>
+      <div class="camera-grid" id="camera-preset-bar">
+        <!-- JS 注入 -->
+      </div>
+    </div>
+
+    <div class="panel__sep"></div>
+
+    <!-- 素描明度模式 -->
+    <div class="section-block">
+      <label class="feature-toggle" for="value-check-toggle" id="value-check-row">
+        <div class="feature-toggle__left">
+          <div class="feature-toggle__icon">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M7 1.5A5.5 5.5 0 0 1 7 12.5" fill="currentColor" opacity=".45"/>
+            </svg>
+          </div>
+          <div>
+            <div class="feature-toggle__name">素描明度</div>
+            <div class="feature-toggle__desc">Value Check · V 键</div>
+          </div>
+        </div>
+        <div class="ios-toggle">
+          <input type="checkbox" id="value-check-toggle"/>
+          <div class="ios-toggle__track">
+            <div class="ios-toggle__thumb"></div>
+          </div>
+        </div>
+      </label>
+    </div>
+
+    <div class="panel__sep"></div>
+
+    <!-- ★ 姿态 / 光照 / 材质 标签页 -->
+    <div class="tab-bar" id="panel-tab-bar">
+      <button class="tab-btn tab-btn--active" data-tab="pose">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="3" r="1.8" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M3 13v-4a4 4 0 0 1 8 0v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        姿态
+      </button>
+      <button class="tab-btn" data-tab="lighting">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M3.05 3.05l1.06 1.06M9.9 9.9l1.06 1.06M10.95 3.05L9.9 4.11M4.1 9.9 3.05 10.95"
+                stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        光照
+      </button>
+      <!-- ★ NEW: 材质标签 -->
+      <button class="tab-btn" data-tab="material">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2"/>
+          <circle cx="5.5" cy="5.5" r="1.2" fill="currentColor" opacity="0.5"/>
+          <path d="M9 5a2.5 2.5 0 0 1-2 4" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+        材质
+      </button>
+    </div>
+
+    <!-- 姿态 Tab -->
+    <div class="tab-pane tab-pane--active" id="tab-pose">
+      <div id="pose-controls-container">
+        <div class="empty-hint">等待模型加载…</div>
+      </div>
+    </div>
+
+    <!-- 光照 Tab -->
+    <div class="tab-pane" id="tab-lighting">
+      <div id="lighting-controls-container">
+        <div class="empty-hint">等待模型加载…</div>
+      </div>
+    </div>
+
+    <!-- ★ NEW: 材质 Tab -->
+    <div class="tab-pane" id="tab-material">
+      <div id="material-controls-container">
+        <div class="empty-hint">等待模型加载…</div>
+      </div>
+    </div>
+
+    <!-- 底部版本 -->
+    <div class="panel__footer-bar">
+      <span class="version-chip">v1.2 · Phase VII</span>
+    </div>
+
+  </aside>
+
+  <!-- ── 顶部工具栏 ───────────────────────────────── -->
+  <nav id="toolbar-top" class="toolbar">
+    <!-- 左：Logo文字 -->
+    <div class="toolbar__left">
+      <span class="toolbar__brand">POSEREF STUDIO</span>
+    </div>
+
+    <!-- ★ NEW: 角色管理栏（居中区域）-->
+    <div class="toolbar__center" id="character-bar">
+      <!-- CharacterBar.js 动态注入 -->
+    </div>
+
+    <!-- 右：功能按钮组 -->
+    <div class="toolbar__right">
+      <!-- 截图 -->
+      <button class="tool-btn" id="btn-snapshot" title="截图 PNG（S 键）">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="4" width="13" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="8" cy="9" r="2.2" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M5.5 4V3.5A1 1 0 0 1 6.5 2.5h3a1 1 0 0 1 1 1V4" stroke="currentColor" stroke-width="1.2"/>
+        </svg>
+        <span>截图</span>
+      </button>
+      <!-- 导出 -->
+      <button class="tool-btn" id="btn-export" title="导出配置 JSON">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M8 2v8M5.5 7.5 8 10l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 12v1A1.5 1.5 0 0 0 4.5 14.5h7A1.5 1.5 0 0 0 13 13v-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span>导出</span>
+      </button>
+      <!-- 导入 -->
+      <button class="tool-btn" id="btn-import" title="导入配置 JSON">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M8 10V2M5.5 4.5 8 2l2.5 2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 12v1A1.5 1.5 0 0 0 4.5 14.5h7A1.5 1.5 0 0 0 13 13v-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span>导入</span>
+      </button>
+
+      <!-- 帮助 -->
+      <button class="tool-btn" id="btn-help" title="使用说明（?）">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M6.2 6.2C6.2 5.1 7 4.4 8 4.4s1.8.7 1.8 1.6c0 .8-.5 1.3-1.1 1.7C8.1 8 8 8.3 8 8.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          <circle cx="8" cy="11" r="0.7" fill="currentColor"/>
+        </svg>
+        <span>帮助</span>
+      </button>
+
+      <div class="toolbar__div"></div>
+
+      <!-- 画质徽标 -->
+      <button class="quality-pill" id="quality-badge" title="点击切换画质">高</button>
+
+      <!-- FPS -->
+      <div class="fps-display">
+        <span class="fps-display__label">FPS</span>
+        <span class="fps-display__value" id="fps-display">—</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── 底部状态栏 ────────────────────────────────── -->
+  <footer id="statusbar-bottom" class="statusbar">
+    <div class="statusbar__left">
+      <span class="statusbar__cam">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+          <rect x="0.5" y="2" width="9" height="7" rx="1" stroke="currentColor" stroke-width="0.8"/>
+          <circle cx="5" cy="5.5" r="1.5" stroke="currentColor" stroke-width="0.8"/>
+        </svg>
+        <span id="coord-value">X: 0.00  Y: 0.00  Z: 0.00</span>
+      </span>
+    </div>
+    <div class="statusbar__center">
+      左键旋转 · 右键平移 · 滚轮缩放 · 点击模型选中 · 拖拽 Gizmo 移动 · <kbd>S</kbd> 截图 · <kbd>V</kbd> 明度
+    </div>
+    <div class="statusbar__right">
+      <span id="renderer-info" class="statusbar__renderer">WebGL 2</span>
+    </div>
+  </footer>
+
+  <!-- 加载遮罩 -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner">
+        <div class="spinner-ring"></div>
+        <div class="spinner-ring spinner-ring--delay"></div>
+      </div>
+      <p class="loading-text">正在初始化渲染引擎</p>
+      <p class="loading-subtext">PoseRef · Phase VII</p>
+      <div id="progress-bar-wrap" class="progress-bar-wrap">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+      </div>
+      <span id="progress-percent" class="progress-percent"></span>
+    </div>
+  </div>
+
+  <!-- ── 使用说明弹窗 ─────────────────────────── -->
+  <div id="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+
+    <div id="help-modal">
+
+      <!-- 头部 -->
+      <header class="help-modal__header">
+        <div class="help-modal__title-group">
+          <div class="help-modal__icon">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <circle cx="10" cy="10" r="8" stroke="white" stroke-width="1.6"/>
+              <path d="M7.8 7.8C7.8 6.5 8.8 5.6 10 5.6s2.2.9 2.2 2c0 1-.6 1.6-1.4 2.1-.6.4-.8.8-.8 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="10" cy="13.8" r="0.9" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="help-modal__title" id="help-modal-title">使用说明</h2>
+            <p class="help-modal__subtitle">PoseRef Studio · 快速上手指南</p>
+          </div>
+        </div>
+        <button class="help-modal__close" id="help-close-btn" aria-label="关闭">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </header>
+
+      <!-- 内容体 -->
+      <div class="help-modal__body">
+
+        <!-- 快速入门横幅 -->
+        <div class="help-hero">
+          <div class="help-hero__emoji">👋</div>
+          <div class="help-hero__text">
+            <p>欢迎使用 <strong>PoseRef Studio</strong>！无需任何 3D 软件经验，按照以下说明即可快速上手。所有操作均实时生效，尽情探索吧。</p>
+          </div>
+        </div>
+
+        <!-- 四大功能区卡片 -->
+        <div class="help-sections">
+
+          <!-- ① 基础视角控制 -->
+          <div class="help-section help-section--view">
+            <div class="help-section__header">
+              <div class="help-section__badge">🖱️</div>
+              <h3 class="help-section__title">视角控制</h3>
+            </div>
+            <ul class="help-list">
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">左键 拖拽</span>
+                </div>
+                <p class="help-item__desc"><strong>旋转视角</strong> — 围绕场景中心自由旋转</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">右键 拖拽</span>
+                </div>
+                <p class="help-item__desc"><strong>平移视角</strong> — 上下左右移动画面</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">滚轮</span>
+                </div>
+                <p class="help-item__desc"><strong>缩放视角</strong> — 推近或拉远镜头</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">视角预设</span>
+                </div>
+                <p class="help-item__desc">点击左侧面板中的<strong>预设按钮</strong>，一键切换正面、侧面、俯瞰等标准视角</p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ② 角色管理 -->
+          <div class="help-section help-section--char">
+            <div class="help-section__header">
+              <div class="help-section__badge">🧍</div>
+              <h3 class="help-section__title">角色管理</h3>
+            </div>
+            <ul class="help-list">
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">添加角色</span>
+                </div>
+                <p class="help-item__desc">点击顶部<strong>角色栏 +</strong> 按钮，复制并添加新模型到场景中</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">左键 点击</span>
+                </div>
+                <p class="help-item__desc"><strong>选中模型</strong> — 直接点击 3D 模型即可选中，脚下会出现<strong>蓝色光环</strong>标识</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">Gizmo 拖拽</span>
+                </div>
+                <p class="help-item__desc">选中后，拖拽模型<strong>脚下的位移箭头</strong>（Gizmo）在场景中移动位置</p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ③ 姿态与材质 -->
+          <div class="help-section help-section--pose">
+            <div class="help-section__header">
+              <div class="help-section__badge">🦾</div>
+              <h3 class="help-section__title">姿态与材质</h3>
+            </div>
+            <ul class="help-list">
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">姿态 Tab</span>
+                </div>
+                <p class="help-item__desc">在左侧<strong>姿态面板</strong>滑动各关节滑条，精确调整选中角色的骨骼角度</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">材质 Tab</span>
+                </div>
+                <p class="help-item__desc">切换到<strong>材质标签页</strong>，调整颜色、粗糙度、金属感等 PBR 参数；所有更改<strong>仅对当前选中模型</strong>生效</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">光照 Tab</span>
+                </div>
+                <p class="help-item__desc">在<strong>光照面板</strong>调整主光、环境光及面积光的强度、颜色与方向</p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ④ 专业工具与快捷键 -->
+          <div class="help-section help-section--adv">
+            <div class="help-section__header">
+              <div class="help-section__badge">⚡</div>
+              <h3 class="help-section__title">快捷键 & 专业工具</h3>
+            </div>
+            <ul class="help-list">
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <kbd class="help-kbd">V</kbd>
+                </div>
+                <p class="help-item__desc"><strong>素描明度模式</strong> — 将画面转为灰阶，帮助检验光影明暗关系（Value Check）</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <kbd class="help-kbd">S</kbd>
+                </div>
+                <p class="help-item__desc"><strong>截图 &amp; 专注模式</strong> — 隐藏所有 UI 界面，以纯净视口截取 PNG 参考图</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">画质切换</span>
+                </div>
+                <p class="help-item__desc">点击右上角<strong>「高 / 中 / 低」徽标</strong>按钮，按设备性能调整渲染画质</p>
+              </li>
+              <li class="help-item">
+                <div class="help-item__trigger">
+                  <span class="help-tag help-tag--mouse">导出 / 导入</span>
+                </div>
+                <p class="help-item__desc">使用工具栏<strong>导出按钮</strong>保存当前全部姿态与灯光配置为 JSON，下次可一键还原</p>
+              </li>
+            </ul>
+          </div>
+
+        </div><!-- /help-sections -->
+      </div><!-- /help-modal__body -->
+
+      <!-- 底部 -->
+      <footer class="help-modal__footer">
+        <span class="help-footer__tip">按 <kbd>Esc</kbd> 或点击遮罩区域关闭</span>
+        <span class="help-footer__version">PoseRef v1.2 · Phase VII</span>
+      </footer>
+
+    </div><!-- /help-modal -->
+  </div><!-- /help-overlay -->
+
+  <!-- 帮助弹窗控制脚本（零依赖，纯原生） -->
+  <script>
+  (function () {
+    'use strict';
+
+    const overlay   = document.getElementById('help-overlay');
+    const btnOpen   = document.getElementById('btn-help');
+    const btnClose  = document.getElementById('help-close-btn');
+    const modal     = document.getElementById('help-modal');
+
+    function openHelp () {
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      btnClose.focus();
+    }
+
+    function closeHelp () {
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      btnOpen.focus();
+    }
+
+    // 打开
+    btnOpen.addEventListener('click', openHelp);
+
+    // 关闭按钮
+    btnClose.addEventListener('click', closeHelp);
+
+    // 点击遮罩（非弹窗区域）关闭
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeHelp();
+    });
+
+    // ESC 键关闭
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('is-open')) {
+        closeHelp();
+      }
+    });
+  })();
+  </script>
+
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
