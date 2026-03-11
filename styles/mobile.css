@@ -1,34 +1,27 @@
 /* ==============================================
-   mobile.css — 移动端响应式 & 排版精修
-   涵盖：Typography Polish · Bottom Sheet · Touch UX
-   引入方式：在 index.html 所有其他 CSS 之后加一行：
-   <link rel="stylesheet" href="/styles/mobile.css" />
+   mobile.css — 全平台统一抽屉系统 + 响应式精修
    ============================================== */
 
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 0 ── 全局排版精修（所有屏幕尺寸）
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   SECTION 0 ── 全局排版精修
+   ═══════════════════════════════════════════════════ */
 
-/* 数值文字防抖：固定宽度 + tabular-nums，彻底消除跳位 */
 .slider-value {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--color-text-tertiary);
-  /* ★ 核心：固定宽度 + 等宽数字，无论值 0→100 均不跳动 */
   min-width: 36px;
   width: 36px;
   text-align: right;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0;
   transition: color var(--duration-fast) var(--ease-in-out);
-  /* 防止换行 */
   white-space: nowrap;
   overflow: hidden;
   flex-shrink: 0;
 }
 
-/* 面板 Section 标题：字间距增加呼吸感 */
 .panel__section-title,
 .section-header__label,
 .pose-presets__title {
@@ -36,31 +29,14 @@
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.12em;           /* ★ 增加呼吸感 */
+  letter-spacing: 0.12em;
   line-height: 1;
 }
 
-/* 面板标题 */
-.brand__name {
-  font-size: 13px;
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.025em;
-  line-height: 1;
-}
-
-.brand__tagline {
-  font-size: 10px;
-  color: var(--color-text-tertiary);
-  letter-spacing: 0.06em;
-  line-height: 1;
-}
-
-/* slider-label 文字统一 */
 .slider-label__joint {
   font-size: 11px;
   font-weight: var(--font-weight-medium);
   color: var(--color-text-secondary);
-  /* 防止 slider 行名称换行 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,539 +52,218 @@
   flex-shrink: 0;
 }
 
-/* tab 标签统一字号 */
-.tab-btn {
-  font-size: 11px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: 0.01em;
+.section-block { padding: 8px var(--space-4); }
+.feature-toggle__name { font-size: 12px; font-weight: var(--font-weight-medium); letter-spacing: -0.01em; }
+.feature-toggle__desc { font-size: 10px; letter-spacing: 0.01em; }
+
+
+/* ═══════════════════════════════════════════════════
+   SECTION 1 ── 抽屉遮罩层（全平台）
+   ═══════════════════════════════════════════════════ */
+
+#drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
 }
 
-/* section-block 内容稍微收紧 */
-.section-block {
-  padding: 8px var(--space-4);
-}
-
-/* feature-toggle 文字 */
-.feature-toggle__name {
-  font-size: 12px;
-  font-weight: var(--font-weight-medium);
-  letter-spacing: -0.01em;
-}
-
-.feature-toggle__desc {
-  font-size: 10px;
-  letter-spacing: 0.01em;
+#drawer-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 1 ── 平板适配 (768px – 1024px)
-   面板适度收窄，工具栏精简
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   SECTION 2 ── 面板 Header 内「← 收起」按钮（全平台）
+   ═══════════════════════════════════════════════════ */
+
+.panel__drawer-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.04);
+  color: rgba(0, 0, 0, 0.40);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-left: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, color 0.15s, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel__drawer-close:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: rgba(0, 0, 0, 0.65);
+  transform: translateX(-2px);
+}
+
+.panel__drawer-close:active {
+  background: rgba(0, 0, 0, 0.12);
+  transform: translateX(-4px) scale(0.94);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SECTION 3 ── 工具栏汉堡按钮（全平台）
+   ═══════════════════════════════════════════════════ */
+
+#panel-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md, 8px);
+  border: none;
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+#panel-toggle-btn:hover  { background: rgba(0,0,0,0.06); }
+#panel-toggle-btn:active { background: rgba(0,0,0,0.10); }
+#panel-toggle-btn.is-active { background: rgba(0,0,0,0.06); }
+
+.hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5px;
+  align-items: center;
+  pointer-events: none;
+}
+
+.hamburger-line {
+  display: block;
+  width: 14px;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+  transform-origin: center;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+}
+
+/* 汉堡 → X */
+#panel-toggle-btn.is-active .hamburger-line:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+#panel-toggle-btn.is-active .hamburger-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+#panel-toggle-btn.is-active .hamburger-line:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+
+/* ═══════════════════════════════════════════════════
+   SECTION 4 ── 面板内容滚动
+   ═══════════════════════════════════════════════════ */
+
+.panel--left .tab-pane {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.panel--left .tab-pane::-webkit-scrollbar { width: 3px; }
+.panel--left .tab-pane::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 2px;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   SECTION 5 ── 平板 (769–1024px)
+   ═══════════════════════════════════════════════════ */
 
 @media (max-width: 1024px) and (min-width: 769px) {
-  /* 面板收窄 */
-  .panel {
-    width: 232px;
-  }
-
-  .toolbar {
-    padding-left: calc(232px + var(--space-4));
-  }
-
-  /* 工具栏按钮文字隐藏，只保留图标 */
-  .tool-btn > span {
-    display: none;
-  }
-
-  .tool-btn {
-    width: 32px;
-    padding: 0;
-    justify-content: center;
-  }
+  .tool-btn > span { display: none; }
+  .tool-btn { width: 32px; padding: 0; justify-content: center; }
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 2 ── 手机端 Bottom Sheet 布局 (≤ 768px)
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   SECTION 6 ── 手机端 (≤ 768px)
+   ═══════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
+  #canvas-container { inset: 0; touch-action: none; }
 
-  /* ── 2.1 画布铺满全屏 ── */
-  #canvas-container {
-    inset: 0;
-    /* touch-action: none 防止与 Bottom Sheet 滑动冲突 */
-    /* 注意：OrbitControls 区域用 JS 控制，见 Section 4 */
-  }
-
-  /* ── 2.2 隐藏桌面端左侧面板 ── */
-  .panel--left {
-    /* 移出屏幕，不占空间 */
-    transform: translateX(calc(-100% - 20px)) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    width: 0 !important;
-    overflow: hidden !important;
-    transition:
-      transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity   0.42s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  }
-
-  /* ── 2.3 顶部工具栏全宽 ── */
   .toolbar {
-    left: 0;
-    right: 0;
+    left: 0; right: 0;
     padding: 0 var(--space-3);
-    height: 48px; /* 稍高，方便触摸 */
+    height: 48px;
+    background: rgba(248,248,250,0.92);
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
   }
 
-  /* 隐藏角色栏中间区域（节省空间） */
-  .toolbar__center {
-    display: none;
-  }
+  .toolbar__center  { display: none; }
+  .toolbar__brand   { display: none; }
+  .tool-btn > span  { display: none; }
+  .tool-btn         { width: 36px; min-width: 36px; padding: 0; justify-content: center; }
 
-  /* 工具栏按钮 span 文字隐藏 */
-  .tool-btn > span {
-    display: none;
-  }
+  .panel--left { width: min(280px, 85vw); }
 
-  .tool-btn {
-    width: 36px;
-    min-width: 36px;
-    padding: 0;
-    justify-content: center;
-  }
+  /* 44pt 最小触摸区域 */
+  .tool-btn, .tab-btn, .camera-preset-btn,
+  .panel__drawer-close, #panel-toggle-btn,
+  .ios-toggle, .feature-toggle, .pose-preset-btn { min-height: 44px; }
 
-  /* ── 2.4 Bottom Sheet 容器 ── */
-  #mobile-bottom-sheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
+  /* Slider 触摸优化 */
+  .slider-input { height: 28px !important; touch-action: pan-x; }
+  .slider-track { height: 28px; }
+  .slider-input::-webkit-slider-thumb { width: 22px !important; height: 22px !important; }
+  .slider-input::-moz-range-thumb     { width: 22px !important; height: 22px !important; }
+  .slider-row   { padding: 10px var(--space-4) 12px; }
+  .color-swatch { min-width: 26px !important; min-height: 26px !important; }
 
-    /* 高度：收起时只露出拖拽手柄，展开时 38vh */
-    height: 38vh;
-    min-height: 200px;
-    max-height: 75vh;
-
-    /* 毛玻璃 */
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    border-top: 0.5px solid rgba(255, 255, 255, 0.65);
-    border-radius: 20px 20px 0 0;
-    box-shadow:
-      0 -4px 32px rgba(0, 0, 0, 0.10),
-      0 -1px 0 rgba(255, 255, 255, 0.80);
-
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    /* 初始入场动画 */
-    animation: sheetSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-delay: 0.3s;
-
-    /* 平滑展开/收起 */
-    transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform;
-  }
-
-  /* 收起状态：仅露出手柄 + 32px */
-  #mobile-bottom-sheet.sheet--collapsed {
-    transform: translateY(calc(100% - 48px));
-  }
-
-  /* ── 2.5 拖拽手柄区域 ── */
-  #sheet-handle-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 0 6px;
-    flex-shrink: 0;
-    cursor: pointer;
-    /* 加大触摸区域 */
-    min-height: 40px;
-    /* 防止误触穿透 */
-    touch-action: none;
-  }
-
-  /* 物理手柄条 */
-  #sheet-handle-bar::before {
-    content: '';
-    display: block;
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: rgba(0, 0, 0, 0.14);
-    transition: background 0.15s, width 0.15s;
-  }
-
-  #sheet-handle-bar:hover::before,
-  #sheet-handle-bar:active::before {
-    background: rgba(0, 0, 0, 0.25);
-    width: 44px;
-  }
-
-  /* 收起/展开 箭头指示 */
-  #sheet-toggle-btn {
-    position: absolute;
-    right: 14px;
-    top: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.05);
-    border: none;
-    color: rgba(0, 0, 0, 0.40);
-    cursor: pointer;
-    transition:
-      background 0.15s,
-      color      0.15s,
-      transform  0.42s cubic-bezier(0.16, 1, 0.3, 1);
-    /* 加大点击区域 */
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  #sheet-toggle-btn:active {
-    background: rgba(0, 0, 0, 0.10);
-    transform: scale(0.9);
-  }
-
-  /* 收起时箭头指向上方 */
-  #sheet-toggle-btn .sheet-arrow {
-    transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-    display: block;
-  }
-
-  #mobile-bottom-sheet.sheet--collapsed #sheet-toggle-btn .sheet-arrow {
-    transform: rotate(180deg);
-  }
-
-  /* ── 2.6 Sheet 标题栏（含 Tab） ── */
-  #sheet-header {
-    display: flex;
-    align-items: center;
-    padding: 0 var(--space-4) 8px;
-    gap: var(--space-3);
-    flex-shrink: 0;
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
-  }
-
-  /* Sheet 内的 Tab 按钮组 */
-  #sheet-tabs {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 9px;
-    padding: 2px;
-    flex: 1;
-  }
-
-  .sheet-tab-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    height: 28px;
-    border-radius: 7px;
-    border: none;
-    background: transparent;
-    color: rgba(0, 0, 0, 0.38);
-    font-size: 11px;
-    font-weight: 500;
-    font-family: var(--font-sans);
-    cursor: pointer;
-    transition:
-      background 0.15s,
-      color      0.15s,
-      box-shadow 0.15s;
-    white-space: nowrap;
-    -webkit-tap-highlight-color: transparent;
-    /* 加大触摸区域 */
-    min-height: 36px;
-  }
-
-  .sheet-tab-btn--active {
-    background: white;
-    color: rgba(0, 0, 0, 0.80);
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
-  }
-
-  /* ── 2.7 Sheet 内容滚动区 ── */
-  #sheet-content {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    /* 开启 momentum 滚动（iOS） */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    scrollbar-width: none;
-    /* 底部安全区域 */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-  }
-
-  #sheet-content::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Sheet 内部面板容器：水平滚动预设 */
-  .sheet-pane {
-    display: none;
-    padding: var(--space-2) 0;
-  }
-
-  .sheet-pane--active {
-    display: block;
-  }
-
-  /* ── 2.8 相机预设 → 水平滚动行 ── */
+  /* 相机预设横向滚动 */
   .camera-grid {
-    display: flex;
-    flex-direction: row;
-    gap: 6px;
+    display: flex; flex-direction: row; gap: 6px;
     padding: 4px var(--space-4) 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
+    overflow-x: auto; scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
+  .camera-grid::-webkit-scrollbar { display: none; }
+  .camera-preset-btn { flex-shrink: 0; min-height: 36px; min-width: 52px; padding: 0 12px; font-size: 11px; }
 
-  .camera-grid::-webkit-scrollbar {
-    display: none;
-  }
+  .fps-display        { display: none; }
+  .panel__footer-bar  { display: none; }
+  .model-stats        { display: none; }
+  .quality-pill       { height: 24px; padding: 0 8px; font-size: 9px; }
 
-  .camera-preset-btn {
-    flex-shrink: 0;
-    /* 加大触摸 hit area */
-    min-height: 36px;
-    min-width: 52px;
-    padding: 0 12px;
-    font-size: 11px;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     SECTION 3 ── 移动端触摸按钮 Hit Area 优化
-     ═══════════════════════════════════════════════════════════════ */
-
-  /* 所有可点击元素最小触摸区域 44×44 pt（Apple HIG 标准） */
-  .tool-btn,
-  .tab-btn,
-  .sheet-tab-btn,
-  .camera-preset-btn,
-  .panel__toggle,
-  .ios-toggle,
-  .feature-toggle,
-  .help-modal__close,
-  .char-tag,
-  .char-tag__del,
-  .pose-preset-btn {
-    min-height: 44px;
-    /* 使用 pseudo-element 扩展点击区域（不影响布局） */
-    position: relative;
-  }
-
-  /* 用 ::after 扩展点击热区，视觉不变但手指更易命中 */
-  .tool-btn::after,
-  .tab-btn::after,
-  .char-tag__del::after {
-    content: '';
-    position: absolute;
-    inset: -8px;
-  }
-
-  /* slider 高度加大，方便手指拖动 */
-  .slider-input {
-    height: 28px !important;
-    cursor: pointer;
-    /* 关键：禁止垂直滑动被 bottom sheet 捕获 */
-    touch-action: pan-x;
-  }
-
-  .slider-track {
-    height: 28px;
-  }
-
-  /* slider thumb 加大 */
-  .slider-input::-webkit-slider-thumb {
-    width: 22px !important;
-    height: 22px !important;
-  }
-
-  .slider-input::-moz-range-thumb {
-    width: 22px !important;
-    height: 22px !important;
-  }
-
-  /* slider row 行高加大 */
-  .slider-row {
-    padding: 10px var(--space-4) 12px;
-  }
-
-  /* iOS toggle 加大 */
-  .ios-toggle__track {
-    transform-origin: center;
-  }
-
-  /* 颜色拾取按钮加大 */
-  .color-swatch {
-    min-width: 26px !important;
-    min-height: 26px !important;
-  }
-
-  /* ── 画布 touch-action：OrbitControls 区域 ── */
-  /* 允许双指缩放 & 单指旋转，但阻止系统的 pinch-zoom */
-  #canvas-container {
-    touch-action: none;
-  }
-
-  /* Bottom sheet 区域阻止事件穿透到画布 */
-  #mobile-bottom-sheet {
-    touch-action: auto;
-  }
-
-  /* Handle bar 阻止事件穿透 */
-  #sheet-handle-bar {
-    touch-action: none;
-  }
-
-
-  /* ═══════════════════════════════════════════════════════════════
-     SECTION 4 ── 移动端视觉微调
-     ═══════════════════════════════════════════════════════════════ */
-
-  /* 顶部工具栏背景 */
-  .toolbar {
-    background: rgba(248, 248, 250, 0.92);
-    border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
-  }
-
-  /* 品牌文字在移动端工具栏不显示（节省空间） */
-  .toolbar__brand {
-    display: none;
-  }
-
-  /* FPS 显示在移动端隐藏 */
-  .fps-display {
-    display: none;
-  }
-
-  /* 画质按钮缩小 */
-  .quality-pill {
-    height: 24px;
-    padding: 0 8px;
-    font-size: 9px;
-  }
-
-  /* 空状态提示在 sheet 里保持可见 */
-  .empty-hint {
-    padding: var(--space-4);
-    text-align: center;
-    font-size: 12px;
-    color: var(--color-text-tertiary);
-  }
-
-  /* 版本号 footer 隐藏 */
-  .panel__footer-bar {
-    display: none;
-  }
-
-  /* 模型状态统计行（小屏不显示） */
-  .model-stats {
-    display: none;
-  }
-
-  /* ── 4.1 帮助弹窗移动端适配 ── */
-  #help-overlay {
-    padding: 0;
-    align-items: flex-end;
-  }
-
-  #help-modal {
-    border-radius: 20px 20px 0 0;
-    max-height: 90vh;
-    width: 100%;
-    max-width: 100%;
-  }
+  #help-overlay { padding: 0; align-items: flex-end; }
+  #help-modal   { border-radius: 20px 20px 0 0; max-height: 90vh; width: 100%; max-width: 100%; }
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 5 ── 入场动画
-   ═══════════════════════════════════════════════════════════════ */
-
-@keyframes sheetSlideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes sheetCollapse {
-  to {
-    transform: translateY(calc(100% - 48px));
-  }
-}
-
-
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 6 ── 超小屏 (≤ 390px, iPhone SE 等)
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   SECTION 7 ── 超小屏 (≤ 390px)
+   ═══════════════════════════════════════════════════ */
 
 @media (max-width: 390px) {
-  #mobile-bottom-sheet {
-    height: 42vh;
-    border-radius: 16px 16px 0 0;
-  }
-
-  .toolbar {
-    height: 44px;
-    padding: 0 var(--space-2);
-  }
-
-  .tool-btn {
-    width: 32px;
-    min-width: 32px;
-  }
-
-  .sheet-tab-btn {
-    font-size: 10px;
-    gap: 3px;
-  }
-
-  .sheet-tab-btn svg {
-    display: none;
-  }
-
-  .slider-label__joint {
-    max-width: 90px;
-  }
+  .panel--left { width: 88vw; }
+  .toolbar     { height: 44px; padding: 0 var(--space-2); }
+  .tool-btn    { width: 32px; min-width: 32px; }
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   SECTION 7 ── iOS 安全区域（刘海屏 / Dynamic Island）
-   ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   SECTION 8 ── iOS 安全区域
+   ═══════════════════════════════════════════════════ */
 
 @supports (padding: env(safe-area-inset-bottom)) {
+  .panel--left {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
   @media (max-width: 768px) {
-    #mobile-bottom-sheet {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
     .toolbar {
       padding-top: env(safe-area-inset-top, 0px);
       height: calc(48px + env(safe-area-inset-top, 0px));

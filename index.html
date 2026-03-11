@@ -15,7 +15,7 @@
 
   <link rel="stylesheet" href="/styles/area_light.css" />
   <link rel="stylesheet" href="/styles/help.css" />
-  
+  <link rel="stylesheet" href="/styles/mobile.css" />
 </head>
 <body>
 
@@ -171,8 +171,22 @@
 
   <!-- ── 顶部工具栏 ───────────────────────────────── -->
   <nav id="toolbar-top" class="toolbar">
-    <!-- 左：Logo文字 -->
+    <!-- 左：汉堡按钮 + Logo -->
     <div class="toolbar__left">
+      <button
+        id="panel-toggle-btn"
+        type="button"
+        aria-label="打开控制面板"
+        aria-expanded="false"
+        aria-controls="panel-left"
+        title="控制面板（P 键）"
+      >
+        <span class="hamburger-lines" aria-hidden="true">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </span>
+      </button>
       <span class="toolbar__brand">POSEREF STUDIO</span>
     </div>
 

@@ -25,6 +25,7 @@ import { MaterialPanel }      from './ui/MaterialPanel.js';
 import { CharacterBar }       from './ui/CharacterBar.js';
 import { KeyboardController } from './scene/KeyboardController.js';
 import { ZenMode }            from './ui/ZenMode.js';
+import { MobileController }   from './ui/MobileController.js';
 import { PoseManager }        from './pose/PoseManager.js';
 import { SnapshotManager }    from './utils/SnapshotManager.js';
 import { PresetStore }        from './utils/PresetStore.js';
@@ -54,6 +55,7 @@ class App {
     this._transformSys   = null;
     this._characterBar   = null;
     this._keyboardCtrl   = null;
+    this._drawer         = null;
   }
 
   async init() {
@@ -84,6 +86,17 @@ class App {
       this._controls.maxPolarAngle  = Math.PI * 0.48;
       this._controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
       this._controls.update();
+
+      // ── 抽屉控制器（全平台）─────────────────────────────────────
+      this._drawer = new MobileController(this._controls);
+      // P 键切换面板
+      document.addEventListener('keydown', (e) => {
+        if ((e.key === 'p' || e.key === 'P')
+            && e.target.tagName !== 'INPUT'
+            && e.target.tagName !== 'TEXTAREA') {
+          this._drawer.toggle();
+        }
+      });
 
       // ── 场景 ────────────────────────────────────────────────────
       this._sceneManager = new SceneManager(this._renderer.instance);

@@ -34,8 +34,7 @@
 #toolbar-top {
   position: absolute;
   top: var(--space-4);
-  /* 左右留出面板宽度 + 额外边距，避免遮挡 */
-  left: calc(268px + var(--space-4));
+  left: var(--space-4);
   right: var(--space-4);
   height: 38px;
   z-index: var(--z-toolbar);
@@ -114,7 +113,7 @@
 .statusbar {
   position: absolute;
   bottom: var(--space-4);
-  left: calc(268px + var(--space-4));
+  left: var(--space-4);
   right: var(--space-4);
   height: 30px;
   z-index: var(--z-statusbar);

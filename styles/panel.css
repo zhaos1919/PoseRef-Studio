@@ -7,11 +7,12 @@
    1. 面板基础结构
    ----------------------------------------------- */
 .panel {
-  position: absolute;
-  top: var(--space-4);
-  bottom: var(--space-4);
+  position: fixed;
+  top: 0;
+  bottom: 0;
   z-index: var(--z-panel);
-  width: 252px;
+  width: 268px;
+  height: 100%;
 
   display: flex;
   flex-direction: column;
@@ -21,47 +22,40 @@
   backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
   -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(var(--panel-saturation));
   border: 1px solid var(--panel-border);
-  border-radius: var(--radius-xl);
   box-shadow: var(--panel-shadow);
-
-  /* 防止内容溢出圆角边界 */
   overflow: hidden;
 
-  /* 平滑折叠动画 */
-  transition:
-    transform var(--duration-slow) var(--ease-out-expo),
-    opacity  var(--duration-slow) var(--ease-out-expo),
-    width    var(--duration-slow) var(--ease-out-expo);
-
-  /* 入场动画 */
-  animation: slideRightFadeIn var(--duration-slow) var(--ease-out-expo) both;
-  animation-delay: 0.2s;
+  /* 抽屉滑动动画 */
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
-/* 左侧面板定位 */
+/* 左侧面板：右侧圆角，默认隐藏于屏幕左侧 */
 .panel--left {
-  left: var(--space-4);
+  left: 0;
+  border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+  transform: translateX(-100%);
 }
 
-/* 右侧面板定位 */
+/* 打开状态 */
+.panel--left.drawer--open {
+  transform: translateX(0);
+}
+
+/* 右侧面板（如有） */
 .panel--right {
-  right: var(--space-4);
-  animation-name: slideLeftFadeIn;
-  animation-delay: 0.3s;
+  right: 0;
+  border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+  transform: translateX(100%);
 }
 
-/* 折叠状态 */
-.panel--collapsed {
-  transform: translateX(-16px);
-  opacity: 0;
-  pointer-events: none;
-  width: 0;
-  overflow: hidden;
+.panel--right.drawer--open {
+  transform: translateX(0);
 }
 
-.panel--right.panel--collapsed {
-  transform: translateX(16px);
-}
+/* 兼容旧 collapsed class */
+.panel--collapsed       { transform: translateX(-100%); }
+.panel--right.panel--collapsed { transform: translateX(100%); }
 
 
 /* -----------------------------------------------
@@ -286,27 +280,10 @@
 
 
 /* -----------------------------------------------
-   7. 响应式：小屏幕适配
+   7. 响应式：超小屏面板宽度收窄
    ----------------------------------------------- */
-@media (max-width: 768px) {
-  .panel {
-    width: 220px;
-  }
-
-  #toolbar-top,
-  .statusbar {
-    left: calc(220px + var(--space-3));
-  }
-}
-
 @media (max-width: 480px) {
-  /* 超小屏隐藏左侧面板，改为底部抽屉（后续阶段实现） */
   .panel--left {
-    transform: translateX(calc(-100% - var(--space-4)));
-  }
-
-  #toolbar-top,
-  .statusbar {
-    left: var(--space-3);
+    width: min(268px, 88vw);
   }
 }

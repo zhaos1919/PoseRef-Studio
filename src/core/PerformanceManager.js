@@ -186,6 +186,12 @@ export class PerformanceManager {
     this._isIdle = false;
     this._progressStep = 0;
     clearTimeout(this._idleTimer);
+
+    // 立即恢复到当前画质预设的 DPR，防止渐进渲染遗留的低分辨率
+    if (this._currentQuality) {
+      const preset = QUALITY_PRESETS[this._currentQuality];
+      if (preset) this._renderer.setPixelRatio(preset.dpr);
+    }
   }
 
   /**
@@ -236,11 +242,16 @@ export class PerformanceManager {
    *   Step 3 → 最终 ACES 色调 + 最高曝光精度
    */
   _runProgressiveSteps(onStep) {
+    // 渐进渲染：先用低阴影质量快速响应，再逐步提升到满画质
+    // 注意：DPR 从步骤 1 开始才逐步提升（步骤 0 保持当前 DPR，仅降低阴影开销）
+    const baseDpr = QUALITY_PRESETS[this._currentQuality ?? 'high']?.dpr
+                    ?? Math.min(window.devicePixelRatio, 2);
+
     const steps = [
-      () => onStep?.(0, { shadowMapSize: 512,  dpr: 1 }),
-      () => onStep?.(1, { shadowMapSize: 1024, dpr: Math.min(window.devicePixelRatio, 1.5) }),
-      () => onStep?.(2, { shadowMapSize: 2048, dpr: Math.min(window.devicePixelRatio, 2) }),
-      () => onStep?.(3, { shadowMapSize: 2048, dpr: Math.min(window.devicePixelRatio, 2), final: true }),
+      () => onStep?.(0, { shadowMapSize: 512,  dpr: baseDpr }),
+      () => onStep?.(1, { shadowMapSize: 1024, dpr: baseDpr }),
+      () => onStep?.(2, { shadowMapSize: 2048, dpr: baseDpr }),
+      () => onStep?.(3, { shadowMapSize: 2048, dpr: baseDpr, final: true }),
     ];
 
     let step = 0;
