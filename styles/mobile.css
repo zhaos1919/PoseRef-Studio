@@ -64,9 +64,8 @@
 #drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.36);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(0, 0, 0, 0.28);
+  /* 不使用 backdrop-filter blur，避免把画布模糊掉 */
   z-index: 199;
   opacity: 0;
   pointer-events: none;

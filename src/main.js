@@ -132,7 +132,7 @@ class App {
       });
       this._controls.addEventListener('end', () => {
         this._perfManager.onInteractionEnd((step, cfg) => {
-          if (cfg.dpr) this._renderer.instance.setPixelRatio(cfg.dpr);
+          // DPR 锁定在画质预设值，不随渐进渲染变化，避免模型模糊
           if (cfg.shadowMapSize) {
             const lights = Object.values(this._sceneManager.lightingSystem._lights);
             for (const l of lights) {
